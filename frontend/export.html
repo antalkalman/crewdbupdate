@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CrewDB Export</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-grid.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-theme-quartz.css">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Crew DB</h2>
+      <div class="app-version">v3.1</div>
+      <nav class="menu">
+        <a class="active" href="/export">Export</a>
+        <a href="/sf_browser">SF Browser</a>
+        <a href="/sf_issues">SF Issues</a>
+        <a href="/crew_explorer">Crew Explorer</a>
+        <a href="/registry">Registry</a>
+        <a href="/titles">Titles</a>
+        <a href="/match">Match</a>
+      </nav>
+      <div class="workflow-status" id="workflow-status-panel">
+        <h3>Workflow</h3>
+        <div class="workflow-step todo" id="ws-export">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Export</div>
+            <div class="detail" id="ws-export-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-titles">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Titles</div>
+            <div class="detail" id="ws-titles-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-pipeline">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Pipeline</div>
+            <div class="detail" id="ws-pipeline-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-match">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Match</div>
+            <div class="detail" id="ws-match-detail">&mdash;</div>
+          </div>
+        </div>
+        <button class="workflow-action-btn" id="ws-run-pipeline" style="display:none">&#9654; Run Pipeline</button>
+        <button class="workflow-action-btn" id="ws-run-match" style="display:none">&#9654; Run Matching</button>
+      </div>
+    </aside>
+
+    <main>
+      <h1>Export</h1>
+      <div class="toolbar">
+        <button id="run-live-export" type="button">Export Live Projects</button>
+        <button id="run-new-combine" type="button">Run New Pipeline</button>
+        <div id="result-message" aria-live="polite"></div>
+      </div>
+
+      <!-- Old workflow (hidden) -->
+      <div id="old-workflow" style="display:none;">
+        <div class="toolbar">
+          <button id="run-export" type="button">Run Export</button>
+          <button id="update-combined" type="button">Update Combined Master</button>
+          <a id="go-titles" class="nav-link hidden" href="/titles">Go to Titles</a>
+          <a id="go-match" class="nav-link hidden" href="/match">Go to Match Inbox</a>
+          <button id="save-selection" type="button">Save Selection</button>
+          <button id="refresh-projects" type="button">Refresh</button>
+        </div>
+        <div id="export-grid" class="ag-theme-quartz"></div>
+      </div>
+
+      <h2 style="margin-top:32px;">Project Management</h2>
+      <div class="toolbar" id="projects-toolbar">
+        <button id="save-project-states" type="button">Save Project States</button>
+        <span id="projects-message" style="margin-left:12px;"></span>
+      </div>
+      <div id="projects-grid" class="ag-theme-quartz" style="height:600px;margin-top:8px;"></div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/ag-grid-community.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/export.js"></script>
+  <script src="/js/workflow.js"></script>
+</body>
+</html>

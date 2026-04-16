@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CrewDB Match Inbox</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-grid.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-theme-quartz.css">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Crew DB</h2>
+      <div class="app-version">v3.1</div>
+      <nav class="menu">
+        <a href="/export">Export</a>
+        <a href="/sf_browser">SF Browser</a>
+        <a href="/sf_issues">SF Issues</a>
+        <a href="/crew_explorer">Crew Explorer</a>
+        <a href="/registry">Registry</a>
+        <a href="/titles">Titles</a>
+        <a class="active" href="/match">Match</a>
+      </nav>
+      <div class="workflow-status" id="workflow-status-panel">
+        <h3>Workflow</h3>
+        <div class="workflow-step todo" id="ws-export">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Export</div>
+            <div class="detail" id="ws-export-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-titles">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Titles</div>
+            <div class="detail" id="ws-titles-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-pipeline">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Pipeline</div>
+            <div class="detail" id="ws-pipeline-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-match">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Match</div>
+            <div class="detail" id="ws-match-detail">&mdash;</div>
+          </div>
+        </div>
+        <button class="workflow-action-btn" id="ws-run-pipeline" style="display:none">&#9654; Run Pipeline</button>
+        <button class="workflow-action-btn" id="ws-run-match" style="display:none">&#9654; Run Matching</button>
+      </div>
+    </aside>
+
+    <main>
+      <h1>Match Inbox</h1>
+      <div class="toolbar">
+        <button id="run-new-matching" type="button">Run New Matching</button>
+        <button id="run-matching" type="button" style="display:none;">Run Matching</button>
+        <button id="update-combined" type="button" style="display:none;">Update Combined Master</button>
+        <div id="result-message" aria-live="polite"></div>
+      </div>
+
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="confirmed">Confirmed</button>
+        <button class="tab-btn" data-tab="possible">Possible</button>
+        <button class="tab-btn" data-tab="new_names">New Names</button>
+      </div>
+
+      <div class="tab-panel active" id="panel-confirmed">
+        <div class="toolbar" id="confirmed-toolbar">
+          <button id="confirm-selected-btn" type="button" disabled>Write selected to GCMID Map</button>
+          <span id="confirm-message" style="margin-left:12px;"></span>
+        </div>
+        <div id="confirmed-grid" class="ag-theme-quartz match-grid"></div>
+      </div>
+      <div class="tab-panel" id="panel-possible">
+        <div class="toolbar" id="possible-toolbar">
+          <button id="write-possible-btn" type="button" disabled>Write picks to GCMID Map</button>
+          <span id="possible-message" style="margin-left:12px;"></span>
+        </div>
+        <div id="possible-grid" class="ag-theme-quartz match-grid"></div>
+      </div>
+      <div class="tab-panel" id="panel-new_names">
+        <div class="toolbar" id="new-names-toolbar">
+          <button id="add-new-names-btn" type="button" disabled>Add selected to Registry</button>
+          <span id="new-names-message" style="margin-left:12px;"></span>
+        </div>
+        <div id="new-names-grid" class="ag-theme-quartz match-grid"></div>
+      </div>
+    </main>
+  </div>
+
+  <div id="new-name-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:8px; padding:28px; width:520px; max-width:95vw; box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="margin:0; font-size:18px;">Review New Crew Member</h2>
+        <span id="modal-counter" style="color:#888; font-size:13px;"></span>
+      </div>
+
+      <div style="display:grid; gap:14px;">
+
+        <div>
+          <label style="font-size:12px; color:#666; display:block; margin-bottom:4px;">Source Key</label>
+          <div id="modal-source-key" style="font-size:13px; color:#888;"></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="font-size:12px; color:#666; display:block; margin-bottom:4px;">First Name</label>
+            <input id="modal-firstname" type="text" style="width:100%; padding:7px; border:1px solid #ccc; border-radius:4px; font-size:14px;" />
+          </div>
+          <div>
+            <label style="font-size:12px; color:#666; display:block; margin-bottom:4px;">Sure Name</label>
+            <input id="modal-surname" type="text" style="width:100%; padding:7px; border:1px solid #ccc; border-radius:4px; font-size:14px;" />
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size:12px; color:#666; display:block; margin-bottom:4px;">Actual Title <span style="color:#aaa">(General Title)</span></label>
+          <select id="modal-title" style="width:100%; padding:7px; border:1px solid #ccc; border-radius:4px; font-size:14px;">
+            <option value="">-- leave blank --</option>
+          </select>
+          <div style="font-size:11px; color:#aaa; margin-top:3px;">From show: <span id="modal-raw-title"></span></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="font-size:12px; color:#666; display:block; margin-bottom:4px;">Phone <span style="color:#aaa">(clear if temporary)</span></label>
+            <input id="modal-phone" type="text" style="width:100%; padding:7px; border:1px solid #ccc; border-radius:4px; font-size:14px;" />
+          </div>
+          <div>
+            <label style="font-size:12px; color:#666; display:block; margin-bottom:4px;">Email</label>
+            <input id="modal-email" type="text" style="width:100%; padding:7px; border:1px solid #ccc; border-radius:4px; font-size:14px;" />
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size:12px; color:#666; display:block; margin-bottom:4px;">Status</label>
+          <select id="modal-status" style="width:100%; padding:7px; border:1px solid #ccc; border-radius:4px; font-size:14px;">
+            <option value="Active">Active</option>
+            <option value="Retired">Retired</option>
+            <option value="Foreign">Foreign</option>
+            <option value="External">External</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size:12px; color:#666; display:block; margin-bottom:4px;">Note</label>
+          <input id="modal-note" type="text" style="width:100%; padding:7px; border:1px solid #ccc; border-radius:4px; font-size:14px;" placeholder="Optional note..." />
+        </div>
+
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px;">
+        <button id="modal-cancel" type="button" style="padding:8px 16px; border:1px solid #ccc; border-radius:4px; background:#fff; cursor:pointer;">Cancel</button>
+        <div style="display:flex; gap:8px;">
+          <button id="modal-back" type="button" style="padding:8px 16px; border:1px solid #ccc; border-radius:4px; background:#fff; cursor:pointer;">&larr; Back</button>
+          <button id="modal-next" type="button" style="padding:8px 20px; border:none; border-radius:4px; background:#1a6b3a; color:#fff; cursor:pointer; font-weight:600;">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/ag-grid-community.min.js"></script>
+  <script src="/js/api.js?v=7"></script>
+  <script src="/js/match.js?v=11"></script>
+  <script src="/js/workflow.js"></script>
+</body>
+</html>

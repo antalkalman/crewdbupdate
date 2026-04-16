@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Environment
+.env.title_mapper
+.title_mapper_server.log
+.title_mapper_server.pid
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Excel temp files
+~$*.xlsx
+
+# Data files (large, tracked separately)
+SF_Archive/
+Master_database/
+New_Master_Database/*.xlsx
+New_Master_Database/Historical/
+New_Master_Database/status.json
+New_Master_Database/sf_issues_state.json
+
+# Keep projects.json (config, not data)
+!New_Master_Database/projects.json
+
+# Claude config
+.claude/

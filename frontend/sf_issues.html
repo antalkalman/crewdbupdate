@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SF Issues</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-grid.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-theme-quartz.css">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Crew DB</h2>
+      <div class="app-version">v3.1</div>
+      <nav class="menu">
+        <a href="/export">Export</a>
+        <a href="/sf_browser">SF Browser</a>
+        <a class="active" href="/sf_issues">SF Issues</a>
+        <a href="/crew_explorer">Crew Explorer</a>
+        <a href="/registry">Registry</a>
+        <a href="/titles">Titles</a>
+        <a href="/match">Match</a>
+      </nav>
+      <div class="workflow-status" id="workflow-status-panel">
+        <h3>Workflow</h3>
+        <div class="workflow-step todo" id="ws-export">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Export</div>
+            <div class="detail" id="ws-export-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-titles">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Titles</div>
+            <div class="detail" id="ws-titles-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-pipeline">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Pipeline</div>
+            <div class="detail" id="ws-pipeline-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-match">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Match</div>
+            <div class="detail" id="ws-match-detail">&mdash;</div>
+          </div>
+        </div>
+        <button class="workflow-action-btn" id="ws-run-pipeline" style="display:none">&#9654; Run Pipeline</button>
+        <button class="workflow-action-btn" id="ws-run-match" style="display:none">&#9654; Run Matching</button>
+      </div>
+    </aside>
+
+    <main>
+      <h1>SF Issues</h1>
+
+      <div class="toolbar">
+        <button id="run-check" type="button">Run Check</button>
+        <select id="project-filter" style="padding:5px 10px; border:1px solid #ccc; border-radius:4px; font-size:13px;">
+          <option value="">All projects</option>
+        </select>
+        <label style="display:flex; align-items:center; gap:6px; font-size:13px;">
+          <input id="issues-only" type="checkbox" checked /> Issues only
+        </label>
+        <button id="export-selected" type="button" disabled>Export selected</button>
+        <button id="export-all-issues" type="button" disabled>Export all issues</button>
+        <span id="sf-issues-message" style="margin-left:12px; font-size:13px;"></span>
+      </div>
+
+      <div id="sf-issues-info" style="font-size:13px; color:#666; margin:6px 0 4px 0;"></div>
+
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; font-size:13px;">
+        <span style="color:#666;">Extra columns:</span>
+        <div id="extra-col-tags" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+        <div style="position:relative;">
+          <input id="extra-col-picker" type="text" placeholder="+ Add column..."
+            autocomplete="off" class="filter-picker-input" />
+          <div id="extra-col-dropdown" class="filter-dropdown"></div>
+        </div>
+      </div>
+
+      <div id="sf-issues-grid" class="ag-theme-quartz" style="height:calc(100vh - 220px);"></div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/ag-grid-community.min.js"></script>
+  <script src="/js/api.js?v=8"></script>
+  <script src="/js/workflow.js"></script>
+  <script src="/js/sf_issues.js"></script>
+</body>
+</html>

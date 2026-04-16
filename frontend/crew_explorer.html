@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crew Explorer</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-grid.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-theme-quartz.css">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Crew DB</h2>
+      <div class="app-version">v3.1</div>
+      <nav class="menu">
+        <a href="/export">Export</a>
+        <a href="/sf_browser">SF Browser</a>
+        <a href="/sf_issues">SF Issues</a>
+        <a class="active" href="/crew_explorer">Crew Explorer</a>
+        <a href="/registry">Registry</a>
+        <a href="/titles">Titles</a>
+        <a href="/match">Match</a>
+      </nav>
+      <div class="workflow-status" id="workflow-status-panel">
+        <h3>Workflow</h3>
+        <div class="workflow-step todo" id="ws-export">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Export</div>
+            <div class="detail" id="ws-export-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-titles">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Titles</div>
+            <div class="detail" id="ws-titles-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-pipeline">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Pipeline</div>
+            <div class="detail" id="ws-pipeline-detail">&mdash;</div>
+          </div>
+        </div>
+        <div class="workflow-step todo" id="ws-match">
+          <span class="icon"></span>
+          <div>
+            <div class="label">Match</div>
+            <div class="detail" id="ws-match-detail">&mdash;</div>
+          </div>
+        </div>
+        <button class="workflow-action-btn" id="ws-run-pipeline" style="display:none">&#9654; Run Pipeline</button>
+        <button class="workflow-action-btn" id="ws-run-match" style="display:none">&#9654; Run Matching</button>
+      </div>
+    </aside>
+
+    <main>
+      <h1>Crew Explorer</h1>
+
+      <div class="toolbar">
+        <label>View:</label>
+        <label style="margin-left:8px;"><input type="radio" name="crew-view-mode" value="general" checked /> General</label>
+        <label style="margin-left:8px;"><input type="radio" name="crew-view-mode" value="project" /> On Project</label>
+        <label style="margin-left:8px;"><input type="radio" name="crew-view-mode" value="full" /> Full</label>
+        <label style="margin-left:8px;"><input type="radio" name="crew-view-mode" value="export" /> Export</label>
+        <label style="margin-left:12px;"><input id="crew-show-fee" type="checkbox" /> Show fees</label>
+        <button id="crew-export-excel" type="button" style="margin-left:auto;">Export to Excel</button>
+        <button id="crew-refresh" type="button" style="margin-left:4px;">Refresh</button>
+        <span id="crew-message" style="margin-left:8px; font-size:13px;"></span>
+      </div>
+
+      <div id="filter-bar" style="background:#f8f8f8; border:1px solid #e0e0e0; border-radius:6px; padding:14px 16px; margin:8px 0;">
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 24px;">
+
+          <!-- Left column -->
+          <div style="display:flex; flex-direction:column; gap:10px;">
+
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="filter-label">Name</span>
+              <input id="filter-name" type="text" placeholder="Search name..."
+                style="flex:1; padding:5px 10px; border:1px solid #ccc; border-radius:4px; font-size:13px;" />
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+              <span class="filter-label" style="padding-top:5px;">Department</span>
+              <div style="flex:1; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+                <div id="tags-dept" style="display:contents;"></div>
+                <div style="position:relative;">
+                  <input id="picker-dept" type="text" placeholder="+ Add..."
+                    autocomplete="off" class="filter-picker-input" />
+                  <div id="dropdown-dept" class="filter-dropdown"></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+              <span class="filter-label" style="padding-top:5px;">Status</span>
+              <div style="flex:1; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+                <div id="tags-status" style="display:contents;"></div>
+                <div style="position:relative;">
+                  <input id="picker-status" type="text" placeholder="+ Add..."
+                    autocomplete="off" class="filter-picker-input" />
+                  <div id="dropdown-status" class="filter-dropdown"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right column -->
+          <div style="display:flex; flex-direction:column; gap:10px;">
+
+            <div style="display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+              <span class="filter-label" style="padding-top:5px;">Title</span>
+              <div style="flex:1; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+                <div id="tags-title" style="display:contents;"></div>
+                <div style="position:relative;">
+                  <input id="picker-title" type="text" placeholder="+ Add..."
+                    autocomplete="off" class="filter-picker-input" />
+                  <div id="dropdown-title" class="filter-dropdown"></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+              <span class="filter-label" style="padding-top:5px;">Project</span>
+              <div style="flex:1; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+                <div id="tags-project" style="display:contents;"></div>
+                <div style="position:relative;">
+                  <input id="picker-project" type="text" placeholder="+ Add..."
+                    autocomplete="off" class="filter-picker-input" />
+                  <div id="dropdown-project" class="filter-dropdown"></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+              <span class="filter-label" style="padding-top:5px;">Origin</span>
+              <div style="flex:1; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+                <div id="tags-origin" style="display:contents;"></div>
+                <div style="position:relative;">
+                  <input id="picker-origin" type="text" placeholder="+ Add..."
+                    autocomplete="off" class="filter-picker-input" />
+                  <div id="dropdown-origin" class="filter-dropdown"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:center; margin-top:12px; padding-top:10px; border-top:1px solid #e8e8e8;">
+          <button id="crew-clear-filters" type="button"
+            style="padding:5px 14px; font-size:12px; border:1px solid #ccc; border-radius:4px; background:#fff; cursor:pointer;">
+            Clear all filters
+          </button>
+          <label style="font-size:13px; display:flex; align-items:center; gap:6px;">
+            <input id="crew-active-only" type="checkbox" /> Active projects only
+          </label>
+        </div>
+
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:6px; align-items:center;">
+        <button id="crew-prev" type="button">&larr; Prev</button>
+        <span id="crew-page-info" style="font-size:13px;">Page 1</span>
+        <button id="crew-next" type="button">Next &rarr;</button>
+        <label style="margin-left:12px;">Page size:
+          <select id="crew-page-size">
+            <option value="100">100</option>
+            <option value="200" selected>200</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+          </select>
+        </label>
+        <span id="crew-total-info" style="font-size:13px; color:#666;"></span>
+        <span id="crew-row-count" style="margin-left:auto; color:#666; font-size:13px;"></span>
+      </div>
+
+      <div id="crew-grid" class="ag-theme-quartz" style="height:calc(100vh - 380px); margin-top:8px;"></div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/ag-grid-community.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/crew_explorer.js"></script>
+  <script src="/js/workflow.js"></script>
+</body>
+</html>

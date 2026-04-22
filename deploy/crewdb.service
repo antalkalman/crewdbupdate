@@ -1,0 +1,14 @@
+[Unit]
+Description=CrewDB Updater
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/crewdbupdate
+EnvironmentFile=/home/ubuntu/crewdbupdate/.env.title_mapper
+ExecStart=/home/ubuntu/crewdbupdate/venv/bin/uvicorn backend.app:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

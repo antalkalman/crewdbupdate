@@ -128,6 +128,17 @@ These live on the server only and must be uploaded manually after a fresh deploy
 
 ---
 
+## Future Work
+
+Not planned for now but worth doing eventually:
+
+- **Private repo + EC2 access** — make the GitHub repo private and set up a deploy key so EC2 can still `git pull` without a personal token.
+- **Multi-app routing** — run multiple app instances on the same server, each on its own subdomain (`app1.honinbo.net`, `app2.honinbo.net`), with nginx routing to the right one.
+- **One-click deploy from localhost** — a button or script that SSHes into EC2 and runs `git pull && systemctl restart crewdb` remotely, without having to SSH in manually.
+- **Mount EC2 filesystem locally** — use SSHFS to mount the EC2 data folder (`New_Master_Database/`) on your Mac, so you can edit Excel files locally and have them live on the server.
+
+---
+
 ## Deploy Configs (in repo under `deploy/`)
 
 | File | Description |

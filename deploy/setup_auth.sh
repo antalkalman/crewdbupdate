@@ -11,8 +11,8 @@ sudo apt install -y apache2-utils
 
 echo ""
 echo "==> Create login credentials for CrewDB"
-read -p "Username: " USERNAME
-sudo htpasswd -c /etc/nginx/.htpasswd "$USERNAME"
+read -p "Username: " USERNAME </dev/tty
+sudo htpasswd -c /etc/nginx/.htpasswd "$USERNAME" </dev/tty
 
 echo ""
 echo "==> Installing auth nginx config..."

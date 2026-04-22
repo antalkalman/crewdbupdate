@@ -101,6 +101,19 @@ bash deploy/setup_ssl.sh
 
 App will be live at `https://honinbo.net`.
 
+### Step 4 — Enable password protection (after HTTPS is working)
+```bash
+bash deploy/setup_auth.sh
+```
+
+You will be prompted to set a username and password. To manage users later:
+```bash
+# Add or change password
+sudo htpasswd /etc/nginx/.htpasswd <username>
+# Remove a user
+sudo htpasswd -D /etc/nginx/.htpasswd <username>
+```
+
 ---
 
 ## Data Files (not in repo)
@@ -122,5 +135,7 @@ These live on the server only and must be uploaded manually after a fresh deploy
 | `setup.sh` | Full server setup: packages, venv, nginx, systemd |
 | `setup_ssl.sh` | Let's Encrypt SSL cert + swap in SSL nginx config |
 | `crewdb.service` | systemd unit file |
-| `nginx.crewdb` | nginx config (HTTP) |
-| `nginx.crewdb.ssl` | nginx config (HTTPS, used after SSL setup) |
+| `nginx.crewdb` | nginx config (HTTP, initial setup only) |
+| `nginx.crewdb.ssl` | nginx config (HTTPS, after SSL setup) |
+| `nginx.crewdb.auth` | nginx config (HTTPS + Basic Auth, final state) |
+| `setup_auth.sh` | Enables password protection (run after setup_ssl.sh) |
